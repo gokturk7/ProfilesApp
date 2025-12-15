@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
+  console.log(process.env.EXPO_PUBLIC_API_BASE_URL);
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
