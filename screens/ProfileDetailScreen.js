@@ -23,7 +23,7 @@ export default function ProfileDetailScreen({ route }) {
       const res = await api.get(`/profiles/${id}`);
       setProfile(res.data);
     } catch (err) {
-      setError('Profil detayları yüklenemedi');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

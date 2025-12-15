@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { api } from '../api/client';
+import { RefreshControl } from 'react-native';
+
 
 export default function ProfilesListScreen({ navigation }) {
   const [profiles, setProfiles] = useState([]);
@@ -31,7 +33,7 @@ export default function ProfilesListScreen({ navigation }) {
         setPage(prev => prev + 1);
       }
     } catch (err) {
-      setError('Profiller yüklenemedi. Bağlantınızı kontrol edin.');
+      setError(err.message);
       console.error(err);
     } finally {
       setLoading(false);
@@ -73,6 +75,33 @@ export default function ProfilesListScreen({ navigation }) {
       </View>
     );
   }
+  const renderEmpty = () => {
+    if (loading) return null;
+    return (
+      <View style={styles.centerContainer}>
+        <Text>Profil bulunamadı</Text>
+      </View>
+    );
+  };
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setProfiles([]);
+    setPage(1);
+    setHasMore(true);
+    await fetchProfiles();
+    setRefreshing(false);
+  };
+
+  if (loading && profiles.length === 0) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" />
+        <Text>Profiller yükleniyor...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -84,6 +113,10 @@ export default function ProfilesListScreen({ navigation }) {
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={renderEmpty}
+        refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }          
       />
     </View>
   );
